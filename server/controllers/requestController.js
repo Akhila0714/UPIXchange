@@ -56,3 +56,33 @@ exports.getRequestById = async (req, res) => {
     });
   }
 };
+exports.acceptRequest = async (req, res) => {
+  try {
+    const { acceptedBy } = req.body;
+
+    const request = await Request.findById(req.params.id);
+
+    if (!request) {
+      return res.status(404).json({
+        success: false,
+        message: "Request not found",
+      });
+    }
+
+    request.acceptedBy = acceptedBy;
+    request.status = "ACCEPTED";
+
+    await request.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Request accepted successfully",
+      request,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
